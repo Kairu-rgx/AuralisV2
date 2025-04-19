@@ -1,0 +1,32 @@
+a {
+    text-decoration: none !important;
+}
+
+.btn-body {
+    height: 50px;
+    width: 200px;
+    border-radius: 20px;
+    color: white;
+    display: flex; /* Use flexbox for horizontal alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: flex-start; /* Align items to the left */
+    padding: 0 10px; /* Add padding for spacing */
+    margin: 5px auto;
+    transition: all 0.5s ease;
+    background-color: #b5c8df01;
+}
+
+.btn-body.active {
+    background-color: #B5C8DF;
+    color: black;
+    transform: scale(1.05);
+}
+
+.btn-icon {
+    margin-right: 10px; /* Add spacing between the icon and title */
+}
+
+.btn-title {
+    font-weight: lighter;
+    font-size: 16px;
+}
