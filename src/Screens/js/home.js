@@ -10,6 +10,8 @@ import Notifications from './notifications';
 import Settings from './settings';
 import '../css/home.css';
 import axios from 'axios';
+import setClientToken from '../../spotify';
+import apiClient from '../../spotify'; // Assuming apiClient is imported from spotify
 
 export default function Home() {
   const [token, setToken] = useState("");
@@ -36,8 +38,15 @@ export default function Home() {
           });
 
           const { access_token } = response.data;
+
+          // Save the new token to localStorage
+          localStorage.setItem('spotifyToken', access_token);
+
+          // Now set the client token with the fresh one
           setToken(access_token);
-          localStorage.setItem('spotifyToken', access_token); 
+          setClientToken(access_token);
+
+          // Clear the URL query params after using the code
           window.history.pushState({}, null, '/'); 
         } catch (error) {
           console.error('Error exchanging code for token:', error);
@@ -46,10 +55,32 @@ export default function Home() {
 
       exchangeCodeForToken();
     } else {
+      // If no code, check localStorage for existing token
       const storedToken = localStorage.getItem('spotifyToken');
-      if (storedToken) {
+      if (storedToken && !token) {
         setToken(storedToken);
+        setClientToken(storedToken);
       }
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('spotifyToken');
+    if (token) {
+      apiClient.defaults.headers.Authorization = `Bearer ${token}`;
+      apiClient.get('me')
+        .then((response) => {
+          console.log('User data:', response.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.error('Spotify API Error:', error.response.status, error.response.data);
+          } else {
+            console.error('API request failed:', error.message);
+          }
+        });
+    } else {
+      console.error('No token found. Please log in.');
     }
   }, []);
 
